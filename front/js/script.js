@@ -1,7 +1,7 @@
 console.log("script démarré")
 
 
-function askKanap() {
+function askKanaps() {
     fetch("http://127.0.0.1:3000/api/products")
         .then((response) => {
             if (response.ok) {
@@ -33,7 +33,8 @@ function askKanap() {
 function displayKanaps(kanapsObjects) {
     let kanapsItems = ""
     kanapsObjects.forEach((kanap) => {
-        kanapsItems += `<a href="./product.html?id=${kanap.id}">
+        console.log(kanap._id)
+        kanapsItems += `<a href="./product.html?id=${kanap._id}">
     <article>
       <img src=${kanap.imageUrl} alt=${kanap.altTxt}>
       <h3 class="productName">${kanap.name}</h3>
@@ -44,7 +45,7 @@ function displayKanaps(kanapsObjects) {
     return kanapsItems
 }
 
-askKanap()
+askKanaps()
 
 
 // function kanapEvent() {

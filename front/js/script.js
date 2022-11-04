@@ -24,10 +24,21 @@ function askKanaps() {
         })
 }
 
+/**
+ * @typedef {object} KanapsObject
+ * @property {string} _id
+ * @property {string} name
+ * @property {string} imageUrl
+ * @property {string} altTxt
+ * @property {string[]} colors
+ * @property {number} price
+ * @property {string} description
+ */
+
 
 /**
  * 
- * @param {*} kanapsObjects 
+ * @param {KanapsObject[]} kanapsObjects 
  * @returns 
  */
 function displayKanaps(kanapsObjects) {
@@ -49,15 +60,6 @@ function displayKanaps(kanapsObjects) {
 askKanaps()
 
 
-// function kanapEvent() {
-//     const kanapsAnchors = document.querySelectorAll("#items > a")
-//     kanapsAnchors.forEach((kanap) => {
-//         kanap.addEventListener("click", () => {
-//             console.log("click")
-//         })
-//     })
-
-// }
 
 
 

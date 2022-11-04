@@ -1,4 +1,3 @@
-console.log("script démarré")
 
 
 function askKanaps() {
@@ -15,9 +14,6 @@ function askKanaps() {
             document
                 .getElementById("items")
                 .innerHTML = displayKanaps(value)
-
-            console.log(document.querySelectorAll("#items > a"))
-            // kanapEvent()
         })
         .catch((error) => {
             console.log(error)
@@ -37,9 +33,9 @@ function askKanaps() {
 
 
 /**
- * 
+ * Construction du code HTML des cartes de canapés d'après le tableau retourné par l'API
  * @param {KanapsObject[]} kanapsObjects 
- * @returns 
+ * @returns {string} chaîne de caractères correspondant au code HTML 
  */
 function displayKanaps(kanapsObjects) {
     let kanapsItems = ""
@@ -51,8 +47,7 @@ function displayKanaps(kanapsObjects) {
       <h3 class="productName">${kanap.name}</h3>
       <p class="productDescription">${kanap.description}</p>
     </article>
-  </a>`})
-    //   console.log(kanapsItems)
+  </a>`})    
     return kanapsItems
 }
 

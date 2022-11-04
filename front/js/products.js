@@ -25,8 +25,7 @@ function getId(href) {
 
 /**
  * Demande les informations concernant un canapé d'après son identifiant
- * Si le serveur répond sans erreur, les inforations sont mises à jour dans le code HTML
- * de la page "products"
+ * et les met à jour dans la page "products"
  * 
  */
 function askKanap() {
@@ -36,18 +35,17 @@ function askKanap() {
                 return response.json()
             }
             console.log("Réponse du serveur NOK")
-
-        })
-       
+        })       
         .then(
             /**
-             * 
+             * Si le serveur répond sans erreur, les informations sont mises à jour dans le code HTML
+             * de la page "products"
              * @param {KanapsObject} value 
              */
             (value) => {
             document
                 .querySelector(".item__img")
-                .innerHTML = `<img src=${value.imageUrl} alt=${value.alTxt}>`
+                .innerHTML = `<img src=${value.imageUrl} alt=${value.altTxt}>`
             document
                 .getElementById("title")
                 .innerText = value.name
@@ -62,7 +60,6 @@ function askKanap() {
                 newElt.innerText = color
                 kanapColors.appendChild(newElt)
             }
-
         })
         .catch((error) => {
             console.log(error)

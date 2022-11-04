@@ -45,6 +45,7 @@ function displayKanaps(kanapsObjects) {
     return kanapsItems
 }
 
+
 askKanaps()
 
 

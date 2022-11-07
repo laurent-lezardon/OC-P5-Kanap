@@ -25,12 +25,14 @@ const cartArray = JSON.parse(localStorage.cartJson)
 cartArray.sort((a, b) => (b.id > a.id ? 1 : -1))
 console.log(cartArray)
 const kanapModels = []
-
-
-
 // ensemble des identifiant du panier
 const cartIds = new Set(cartArray.map((item) => item.id))
 
+/**
+ * Génère le tableau des requètes API d'après un tableau d'index
+ * @param {[string]} cartIds (const globale)
+ * @returns {[Promise]} 
+ */
 function fetchIdListGenerator(cartIds) {
     const fetchList = []
     for (let id of cartIds) {
@@ -65,30 +67,54 @@ Promise.all(fetchIdListGenerator(cartIds))
                 console.log(price.value)
             }
         )
-        console.log("total articles", getCartTotal(cartArray))
-        // console.log(kanapModels)
+        document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
+        document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
     }
     )
 
-function getCartTotal(cartArray) {
-    return cartArray.map((item) => item.quantity).reduce((prev,curr) => prev + curr)
-}
 
 /**
- * 
- * @param {[KanapsObject]} kanapModels
- * @param {Kanap} cartArray 
- * @returns {string} code HTML contenant les articles du panier
+ * Retourne la quantité d'articles d'un panier
+ * @param {[Kanap]} cartArray 
+ * @returns 
  */
-function displayItemPanel(cartArray, kanapModels) {
-    let cartItemsContent = ""
+    function getCartTotal(cartArray) {
+    return cartArray.map((item) => item.quantity).reduce((prev, curr) => prev + curr)
+}
+
+
+/**
+ * Retourne la valeur d'un panier
+ * @param {*} cartArray 
+ * @param {*} kanapModels 
+ * @returns 
+ */
+function getTotalPrice(cartArray, kanapModels) {
+    let TotalPrice = 0
     cartArray.forEach(cartItem => {
-        // console.log(cartItem.id)
-        // console.log(kanapModels.map(item => item._id))
         const modelIndex = kanapModels
             .map(item => item._id)
             .indexOf(cartItem.id)
+        TotalPrice += cartItem.quantity * (parseInt(kanapModels[modelIndex].price))
+        console.log(TotalPrice)
+    }
+    )
+    return TotalPrice
+}
 
+/**
+ * Retourne le code HTML permettant d'afficher les articles du panier
+ * @param {[KanapsObject]} kanapModels articles issus des requètes vers l'API
+ * @param {[Kanap]} cartArray articles issus du panier
+ * @returns {string} code HTML
+ */
+function displayItemPanel(cartArray, kanapModels) {
+    let cartItemsContent = ""
+    cartArray.forEach(cartItem => {        
+        // index de lobjet de l'API correspondant à l'article du panier
+        const modelIndex = kanapModels
+            .map(item => item._id)
+            .indexOf(cartItem.id)
         console.log("index du modèle", modelIndex)
         const exemple = `
         <article class="cart__item" data-id=${cartItem.id} data-color=${cartItem.color}>
@@ -119,4 +145,4 @@ function displayItemPanel(cartArray, kanapModels) {
     return cartItemsContent
 }
 
-console.log()
+

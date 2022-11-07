@@ -98,7 +98,10 @@ function addToLocalStorage(kanap) {
     else {
         cartArray.push(kanap)
     }
+    
+    console.log(cartArray)
     localStorage.cartJson = JSON.stringify(cartArray)
+    
 }
 
 /** 

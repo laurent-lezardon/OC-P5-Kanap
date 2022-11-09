@@ -1,3 +1,13 @@
+// ============== constantes =========================================================
+
+const products = "http://127.0.0.1:3000/api/products/"
+const hrefProduct = window.location.href
+const kanapColors = document.getElementById("colors")
+const kanapQuantity = document.getElementById("quantity")
+const cartButton = document.getElementById("addToCart")
+const id = getId(hrefProduct)
+
+
 
 /**
  * Extraction de l'identifiant d'un canapé dans l'url de la page
@@ -123,14 +133,7 @@ function indexKanapInCart(cartArray, kanap) {
     return index
 }
 
-// ============== constantes =========================================================
 
-const products = "http://127.0.0.1:3000/api/products/"
-const hrefProduct = window.location.href
-const kanapColors = document.getElementById("colors")
-const kanapQuantity = document.getElementById("quantity")
-const cartButton = document.getElementById("addToCart")
-const id = getId(hrefProduct)
 
 
 // ================================================================================ 
@@ -156,9 +159,9 @@ cartButton.addEventListener("click", () => {
     } 
     // l'ajout au panier n'est pas valide (couleur non renseignée)
     else if (!kanapColors.value) {
-        kanapColors.style.color = "orange"
+        kanapColors.style.color = "#fc5858"
     // l'ajout au panier n'est pas valide (quantité = 0)
-    } else { kanapQuantity.style.color = "orange" }
+    } else { kanapQuantity.style.color = "#fc5858" }
 })
 // Restaure les couleurs de police d'origine lors après un ajout non valide
 kanapColors.addEventListener("change", () => kanapColors.style.color = "var(--footer-secondary-color)")

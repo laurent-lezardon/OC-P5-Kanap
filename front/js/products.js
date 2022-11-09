@@ -1,5 +1,5 @@
 // ============== constantes =========================================================
-
+const hrefApi = "http://127.0.0.1:3000/api/products"
 const products = "http://127.0.0.1:3000/api/products/"
 const hrefProduct = window.location.href
 const kanapColors = document.getElementById("colors")
@@ -28,7 +28,7 @@ function getId(href) {
  * @property {string} name
  * @property {string} imageUrl
  * @property {string} altTxt
- * @property {string[]} colors
+ * @property {[string]} colors
  * @property {number} price
  * @property {string} description
  */

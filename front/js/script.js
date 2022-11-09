@@ -1,7 +1,7 @@
-
+const hrefApi = "http://127.0.0.1:3000/api/products"
 
 function askKanaps() {
-    fetch("http://127.0.0.1:3000/api/products")
+    fetch(hrefApi)
         .then((response) => {
             if (response.ok) {
                 return response.json()
@@ -16,7 +16,8 @@ function askKanaps() {
                 .innerHTML = displayKanaps(value)
         })
         .catch((error) => {
-            console.log(error)
+            console.error("catch :", error)
+            alert("Erreur de chargement de la page, essayez plus tard")
         })
 }
 

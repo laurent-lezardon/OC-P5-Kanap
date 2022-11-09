@@ -1,4 +1,4 @@
-
+const hrefApi = "http://127.0.0.1:3000/api/products"
 
 /**
  * representation objet fournie par l'API d'un canapé
@@ -7,7 +7,7 @@
  * @property {string} name
  * @property {string} imageUrl
  * @property {string} altTxt
- * @property {string[]} colors
+ * @property {[string]} colors
  * @property {number} price
  * @property {string} description
  */
@@ -17,11 +17,11 @@
  * @typedef {object} Kanap
  * @property {string} id
  * @property {string} color
- * @property {number} quantity
+ * @property {string} quantity
  */
 
 const products = "http://127.0.0.1:3000/api/products/"
-const cartArray = JSON.parse(localStorage.cartJson)
+const cartArray = localStorage.cartJson ? JSON.parse(localStorage.cartJson) : []
 cartArray.sort((a, b) => (b.id > a.id ? 1 : -1))
 console.log(cartArray)
 const kanapModels = []
@@ -30,8 +30,9 @@ const cartIds = new Set(cartArray.map((item) => item.id))
 
 /**
  * Génère le tableau des requètes API d'après un tableau d'index
- * @param {[string]} cartIds (const globale)
- * @returns {[Promise]} 
+ * @param {(string)} cartIds ensemble des identifiants des articles du panier
+ * @returns {[Promise]} un tableau de Promises résolues par l'ajout des paramètres 
+ * d'un article dans le tableau kanapModels
  */
 function fetchIdListGenerator(cartIds) {
     const fetchList = []
@@ -47,13 +48,17 @@ function fetchIdListGenerator(cartIds) {
                 .then((kanap) => {
                     kanapModels.push(kanap)
                     console.log(kanap.name)
+                })
+                .catch((error) => {
+                    alert("Echec de chargement des articles")
                 }))
-
     }
     return fetchList
 }
 
-
+/**
+ * Contrôle la résolution des requètes vers l'API et met à jour la page avec articles et total
+ */
 Promise.all(fetchIdListGenerator(cartIds))
     .then(() => {
         document
@@ -67,14 +72,17 @@ Promise.all(fetchIdListGenerator(cartIds))
                 // console.log(price.value)
             }
         )
-        document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
-        document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
+        updateTotal(cartArray, kanapModels)
+        // document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
+        // document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
         eventDelete()
         eventQuantityChange()
-
     }
     )
 
+/**
+ * Ecoute suppression d'un article et mise a jour panier et page
+ */
 function eventDelete() {
     document
         .querySelectorAll(".deleteItem").forEach((deletItem) => {
@@ -84,14 +92,20 @@ function eventDelete() {
                 // console.log(getItemIndexCart(deletItem, cartArray))
                 const itemIndexCart = getItemIndexCart(deletItem, cartArray)
                 cartArray.splice(itemIndexCart, 1)
-                localStorage.cartJson = JSON.stringify(cartArray)
                 deletItem.closest("article").remove()
+                localStorage.cartJson = JSON.stringify(cartArray)
+                // document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
+                // document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
+                updateTotal(cartArray, kanapModels)
 
 
             })
         })
 }
 
+/**
+ * Ecoute le changement de quantité d'un article et met à jour le panier et le Total
+ */
 function eventQuantityChange() {
 
     document
@@ -106,11 +120,25 @@ function eventQuantityChange() {
                 const itemIndexCart = getItemIndexCart(itemQuantity, cartArray)
                 cartArray[itemIndexCart].quantity = itemQuantity.value
                 localStorage.cartJson = JSON.stringify(cartArray)
+                // document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
+                // document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
+                updateTotal(cartArray, kanapModels)
 
 
             })
 
         })
+}
+
+/**
+ * Mise à jour du total (quantité et prix) dans la page
+ * @param {[Kanap]} cartArray articles du panier
+ * @param {[KanapsObject]} kanapModels paramètres des articles récupérés sur l'API
+ */
+function updateTotal(cartArray, kanapModels) {
+    // localStorage.cartJson = JSON.stringify(cartArray)
+    document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
+    document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
 }
 
 /**
@@ -136,7 +164,7 @@ function getItemIndexCart(Element, cart) {
  * @returns {number} si le tableau n'est pas vide, la somme des quantité d'article, 0 sinon
  */
 function getCartTotal(cartArray) {
-    return cartArray.length > 0 ? cartArray.map((item) => item.quantity).reduce((prev, curr) => prev + curr) : 0
+    return cartArray.length > 0 ? cartArray.map((item) => parseInt(item.quantity)).reduce((prev, curr) => prev + curr) : 0
 }
 
 
@@ -199,15 +227,15 @@ function displayItemPanel(cartArray, kanapModels) {
   </article>
     `
         cartItemsContent += exemple
-
     });
     return cartItemsContent
 }
 
 
 // ******************** formulaire **********************
-
+// ------- regexName Regex utilisé pour les input de type texte sauf 'Adresse' ----
 const regexName = /[!@#$%^&*(),;.?\/\\"§:{}|<>0-9]/
+// ------- regexName Regex utilisé pour le champ'Adresse' ----
 const regexAddress = /[!@$%^*;\/\\"§{}|<>]/
 firstName = document.getElementById("firstName")
 firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
@@ -242,36 +270,50 @@ city.addEventListener("input", () => {
  * @returns 
  */
 function displayErrorMsg(input, noNumber = true) {
-    const stringChiffre = noNumber ? "" : "chiffres ou "
+    const stringChiffre = noNumber ? "chiffres ou " : ""
     return `${input} ne doit pas contenir ${stringChiffre}de caractères spéciaux`
 }
 
 
 // ------------ soumission du formulaire ----------------------------------------------------
+
+
+/**
+ * Contrôle l'absence de message d'erreurs dans le formulaire
+ * @returns {boolean} renvoi 'true' si aucun d'un message d'erreur
+ */
+function formControl() {
+    let control = false
+    const noMsgError = !(firstNameErrorMsg.innerHTML || lastNameErrorMsg.innerText || addressErrorMsg.innerText || cityErrorMsg.innerText)
+    if (noMsgError && (cartArray.length > 0)) {
+        console.log(cartArray)
+        control = true
+    }
+    return control
+}
+
 const form = document.getElementsByTagName("form")[0]
 form.addEventListener("submit", (e) => {
     if (formControl()) {
         e.preventDefault() // a supprimer après test
         sendOrder()
+
     }
-    else { e.preventDefault() }
+    else {
+        e.preventDefault()
+        // alert("Au moins un des champ des formulaire est incorrect")
+    }
 
 
 })
 
-function formControl() {
-    let control = false
-    if (!(firstNameErrorMsg.innerHTML || lastNameErrorMsg.innerText || addressErrorMsg.innerText || cityErrorMsg.innerText)) {
-        console.log("pas d'erreur")
-        control = true
-    }
-    return control
 
-}
+
 
 // --------------- Envoi de la commande -------------------------------------------------
 function sendOrder() {
-    console.log("contrôle valide")
+    // ---- objet contact du body ---------------------------------------
+
     const contact = {
         firstName: firstName.value,
         lastName: lastName.value,
@@ -280,25 +322,30 @@ function sendOrder() {
         email: email.value
     }
 
+    // --------- objet products (tableau des Id des articles) -----------
     const products = cartArray.map((k) => k.id)
-    console.log(JSON.stringify(products))
+
+    // --------- options de la requète POST -----------------------------
     const options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Accept' : 'application/json'
+            'Accept': 'application/json'
         },
-        body: JSON.stringify({contact, products})
+        body: JSON.stringify({ contact, products })
     }
+
+    // ---------- requète POST -----------------------------------------
     fetch("http://127.0.0.1:3000/api/products/order", options)
         .then((response) => response.json())
         .then((value) => {
-            console.log("réponse ok")
-            console.log(value)
-            console.log(window.location.href)
+            // console.log("réponse ok")
+            // console.log(value.orderId)
+            window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`
         })
         .catch((error) => {
-            console.log("catch :",error)
+            alert("L'envoi de commande a échoué. Essayez plus tard")
+            console.log("catch :", error)
         })
 
 

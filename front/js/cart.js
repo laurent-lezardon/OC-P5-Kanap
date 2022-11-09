@@ -280,15 +280,15 @@ function sendOrder() {
         email: email.value
     }
 
-    const orderbody = [contact, cartArray.map((k) => k.id)]
-    console.log(JSON.stringify(orderbody))
+    const products = cartArray.map((k) => k.id)
+    console.log(JSON.stringify(products))
     const options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept' : 'application/json'
         },
-        body: JSON.stringify(orderbody)
+        body: JSON.stringify({contact, products})
     }
     fetch("http://127.0.0.1:3000/api/products/order", options)
         .then((response) => response.json())

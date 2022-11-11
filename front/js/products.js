@@ -51,33 +51,26 @@ function askKanap() {
     // Récupération de l'identifiant du produit d'après l'url
     
     fetch(`${hrefApi}${id}`)
-        .then((response) => {
-            if (response.ok) {
-                // console.log(response.json())
-                return response.json()
-            }
-            console.log("Réponse du serveur NOK")
-        })
+        .then((response) => response.json())
         .then(
             /**
-             * Si le serveur répond sans erreur, les informations sont mises à jour dans le code HTML
-             * de la page "produits"
-             * @param {KanapsObject} value 
+             * Affichage des informations du produit (API)
+             * @param {KanapsObject} k 
              */
-            (value) => {
+            (k) => {
                 document
                     .querySelector(".item__img")
-                    .innerHTML = `<img src="${value.imageUrl}" alt="${value.altTxt}">`
+                    .innerHTML = `<img src="${k.imageUrl}" alt="${k.altTxt}">`
                 document
                     .getElementById("title")
-                    .textContent = value.name
+                    .textContent = k.name
                 document
                     .getElementById("price")
-                    .textContent = value.price
+                    .textContent = k.price
                 document
                     .getElementById("description")
-                    .textContent = value.description
-                for (color of value.colors) {
+                    .textContent = k.description
+                for (color of k.colors) {
                     const newElt = document.createElement("option")
                     newElt.textContent = color
                     kanapColors.appendChild(newElt)
@@ -153,8 +146,7 @@ cartButton.addEventListener("click", () => {
         quantity: parseInt(kanapQuantity.value)
     }
     // l'ajout au panier est valide (couleur définie et quantité != 0)
-    if (kanapColors.value && (kanapQuantity.value != 0)) {
-        // console.log(`achat valide ${kanapColors.value} ${kanapQuantity.value}`)
+    if (kanapColors.value && (kanapQuantity.value != 0)) {        
         addToLocalStorage(addToCartObject)
         alert("Article ajouté au panier")
     }

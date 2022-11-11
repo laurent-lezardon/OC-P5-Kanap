@@ -16,13 +16,7 @@ const hrefApi = "http://127.0.0.1:3000/api/products/"
 
 function askKanaps() {
     fetch(hrefApi)
-        .then((response) => {
-            if (response.ok) {
-                return response.json()
-            }
-            console.log("Réponse du serveur NOK")
-
-        })
+        .then((response) => response.json())
         .then((value) => {
             console.log(value)
             document
@@ -30,7 +24,7 @@ function askKanaps() {
                 .innerHTML = displayKanaps(value)
         })
         .catch((error) => {
-            console.error("catch :", error)
+            console.error("Erreur :", error)
             alert("Erreur de chargement de la page, essayez plus tard")
         })
 }

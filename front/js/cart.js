@@ -18,14 +18,13 @@
  */
 
 // ================== constantes ======================================================
-
+// Adresse de l'API
 const hrefApi = "http://127.0.0.1:3000/api/products/"
-const products = "http://127.0.0.1:3000/api/products/"
 // Extraction du panier dans le tableau cartArray
 const cartArray = localStorage.cartJson ? JSON.parse(localStorage.cartJson) : []
 // Tri de cartArray (regroupe les articles du panier par id)
 cartArray.sort((a, b) => (b.id > a.id ? 1 : -1))
-// console.log(cartArray)
+// kanapModels contiendra les objets fournis par l'API des articles du panier  
 const kanapModels = []
 // ensemble des identifiants du panier
 const cartIds = new Set(cartArray.map((item) => item.id))
@@ -40,20 +39,15 @@ const cartIds = new Set(cartArray.map((item) => item.id))
  */
 function fetchIdListGenerator(cartIds) {
     const fetchList = []
-    for (let id of cartIds) {
-        // console.log(id)
+    for (let id of cartIds) {        
         fetchList.push(
             fetch(`${hrefApi}${id}`)
-                .then((response) => {
-                    if (response.ok) {
-                        return response.json()
-                    }
-                })
-                .then((kanap) => {
-                    kanapModels.push(kanap)
-                    // console.log(kanap.name)
+                .then((response) =>  response.json())
+                .then((KanapsObject) => {
+                    kanapModels.push(KanapsObject)                    
                 })
                 .catch((error) => {
+                    console.error("Erreur : ", error)
                     alert("Echec de chargement des articles")
                 }))
     }
@@ -101,8 +95,7 @@ function eventQuantityChange() {
  * @param {[Kanap]} cartArray articles du panier
  * @param {[KanapsObject]} kanapModels paramètres des articles récupérés sur l'API
  */
-function updateTotal(cartArray, kanapModels) {
-    // localStorage.cartJson = JSON.stringify(cartArray)
+function updateTotal(cartArray, kanapModels) {    
     document.getElementById("totalQuantity").textContent = getCartTotal(cartArray)
     document.getElementById("totalPrice").textContent = getTotalPrice(cartArray, kanapModels)
 }
@@ -114,16 +107,11 @@ function updateTotal(cartArray, kanapModels) {
  * @returns {number} index ou -1 si non trouvé
  */
 function getItemIndexCart(Element, cart) {
-    const item = Element.closest("article").dataset
-    // console.log("Valeurs id et color")
-    // console.log("e.id :", e.id)
-    // console.log("item.id :", item.id)
-    // console.log("e.color :", e.color)
-    // console.log("item.color :", item.color)
-    // console.log(cart)
+    const item = Element.closest("article").dataset    
     const index = cart.findIndex((k) => (k.id == item.id) && (k.color == item.color))
     return index
 }
+
 /**
  * Retourne la quantité d'articles d'un panier
  * @param {[Kanap]} cartArray 
@@ -203,17 +191,13 @@ function displayItemPanel(cartArray, kanapModels) {
 
 Promise.all(fetchIdListGenerator(cartIds))
     .then(() => {
+        // Affichage de la page avec les articles
         document
             .getElementById("cart__items")
-            .innerHTML = displayItemPanel(cartArray, kanapModels)
-        // document
-        //     .querySelectorAll("article")
-        //     .forEach(
-        //         (article) => {
-        //             const price = document.querySelector("article input")
-        //         }
-        //     )
+            .innerHTML = displayItemPanel(cartArray, kanapModels)  
+        // Mise à jour du total      
         updateTotal(cartArray, kanapModels)
+        // gestion des évènements sur les articles
         eventDelete()
         eventQuantityChange()
     }
@@ -328,15 +312,12 @@ function sendOrder() {
     // ---------- requète POST -----------------------------------------
     fetch(`${hrefApi}order`, options)
         .then((response) => response.json())
-        .then((value) => {
-            // console.log("réponse ok")
-            // console.log(value.orderId)
-            window.location.href = `./confirmation.html?orderId=${value.orderId}` 
-            // `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`
+        .then((value) => {            
+            window.location.href = `./confirmation.html?orderId=${value.orderId}`             
         })
         .catch((error) => {
             alert("L'envoi de commande a échoué. Essayez plus tard")
-            console.log("catch :", error)
+            // console.log("catch :", error)
         })
 
 

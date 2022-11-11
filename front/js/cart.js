@@ -1,7 +1,5 @@
-const hrefApi = "http://127.0.0.1:3000/api/products"
-
 /**
- * representation objet fournie par l'API d'un canapé
+ * KanapsObjet est un objet "kanapé" retourné par l'API
  * @typedef {object} KanapsObject
  * @property {string} _id
  * @property {string} name
@@ -11,22 +9,28 @@ const hrefApi = "http://127.0.0.1:3000/api/products"
  * @property {number} price
  * @property {string} description
  */
-
 /**
- * représentation objet d'un article du panier
+ * Kanap est un objet du panier
  * @typedef {object} Kanap
  * @property {string} id
  * @property {string} color
- * @property {string} quantity
+ * @property {number} quantity
  */
 
+// ================== constantes ======================================================
+
+const hrefApi = "http://127.0.0.1:3000/api/products/"
 const products = "http://127.0.0.1:3000/api/products/"
+// Extraction du panier dans le tableau cartArray
 const cartArray = localStorage.cartJson ? JSON.parse(localStorage.cartJson) : []
+// Tri de cartArray (regroupe les articles du panier par id)
 cartArray.sort((a, b) => (b.id > a.id ? 1 : -1))
-console.log(cartArray)
+// console.log(cartArray)
 const kanapModels = []
-// ensemble des identifiant du panier
+// ensemble des identifiants du panier
 const cartIds = new Set(cartArray.map((item) => item.id))
+
+// ================== fonctions ======================================================
 
 /**
  * Génère le tableau des requètes API d'après un tableau d'index
@@ -37,9 +41,9 @@ const cartIds = new Set(cartArray.map((item) => item.id))
 function fetchIdListGenerator(cartIds) {
     const fetchList = []
     for (let id of cartIds) {
-        console.log(id)
+        // console.log(id)
         fetchList.push(
-            fetch(`${products}${id}`)
+            fetch(`${hrefApi}${id}`)
                 .then((response) => {
                     if (response.ok) {
                         return response.json()
@@ -47,7 +51,7 @@ function fetchIdListGenerator(cartIds) {
                 })
                 .then((kanap) => {
                     kanapModels.push(kanap)
-                    console.log(kanap.name)
+                    // console.log(kanap.name)
                 })
                 .catch((error) => {
                     alert("Echec de chargement des articles")
@@ -56,29 +60,7 @@ function fetchIdListGenerator(cartIds) {
     return fetchList
 }
 
-/**
- * Contrôle la résolution des requètes vers l'API et met à jour la page avec articles et total
- */
-Promise.all(fetchIdListGenerator(cartIds))
-    .then(() => {
-        document
-            .getElementById("cart__items")
-            .innerHTML = displayItemPanel(cartArray, kanapModels)
 
-        document.querySelectorAll("article").forEach(
-            (article) => {
-                // console.log(article.dataset.id)
-                const price = document.querySelector("article input")
-                // console.log(price.value)
-            }
-        )
-        updateTotal(cartArray, kanapModels)
-        // document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
-        // document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
-        eventDelete()
-        eventQuantityChange()
-    }
-    )
 
 /**
  * Ecoute suppression d'un article et mise a jour panier et page
@@ -86,19 +68,12 @@ Promise.all(fetchIdListGenerator(cartIds))
 function eventDelete() {
     document
         .querySelectorAll(".deleteItem").forEach((deletItem) => {
-            deletItem.addEventListener("click", () => {
-                // console.log("click !")            
-                // console.log(deletItem.closest("article"))
-                // console.log(getItemIndexCart(deletItem, cartArray))
+            deletItem.addEventListener("click", () => {                
                 const itemIndexCart = getItemIndexCart(deletItem, cartArray)
                 cartArray.splice(itemIndexCart, 1)
                 deletItem.closest("article").remove()
-                localStorage.cartJson = JSON.stringify(cartArray)
-                // document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
-                // document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
+                localStorage.cartJson = JSON.stringify(cartArray)                
                 updateTotal(cartArray, kanapModels)
-
-
             })
         })
 }
@@ -111,22 +86,13 @@ function eventQuantityChange() {
     document
         .querySelectorAll(".itemQuantity")
         .forEach((itemQuantity) => {
-            itemQuantity.addEventListener("change", () => {
-                // console.log(itemQuantity.value)
-                // const item = itemQuantity.closest("article").dataset
-                // console.log(item.id)
-                // console.log(item.color)
-                console.log(getItemIndexCart(itemQuantity, cartArray))
+            itemQuantity.addEventListener("change", () => {                
+                // console.log(getItemIndexCart(itemQuantity, cartArray))
                 const itemIndexCart = getItemIndexCart(itemQuantity, cartArray)
                 cartArray[itemIndexCart].quantity = itemQuantity.value
-                localStorage.cartJson = JSON.stringify(cartArray)
-                // document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
-                // document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
+                localStorage.cartJson = JSON.stringify(cartArray)                
                 updateTotal(cartArray, kanapModels)
-
-
             })
-
         })
 }
 
@@ -137,8 +103,8 @@ function eventQuantityChange() {
  */
 function updateTotal(cartArray, kanapModels) {
     // localStorage.cartJson = JSON.stringify(cartArray)
-    document.getElementById("totalQuantity").innerText = getCartTotal(cartArray)
-    document.getElementById("totalPrice").innerText = getTotalPrice(cartArray, kanapModels)
+    document.getElementById("totalQuantity").textContent = getCartTotal(cartArray)
+    document.getElementById("totalPrice").textContent = getTotalPrice(cartArray, kanapModels)
 }
 
 /**
@@ -169,10 +135,10 @@ function getCartTotal(cartArray) {
 
 
 /**
- * Retourne la valeur d'un panier
- * @param {*} cartArray 
- * @param {*} kanapModels 
- * @returns 
+ * Retourne le prix total d'un panier
+ * @param {[Kanap]} cartArray 
+ * @param {[KanapsObject]} kanapModels 
+ * @returns {number}
  */
 function getTotalPrice(cartArray, kanapModels) {
     let TotalPrice = 0
@@ -206,7 +172,7 @@ function displayItemPanel(cartArray, kanapModels) {
         const exemple = `
         <article class="cart__item" data-id=${cartItem.id} data-color=${cartItem.color}>
     <div class="cart__item__img">
-      <img src=${kanapModels[modelIndex].imageUrl} alt=${kanapModels[modelIndex].altTxt}>
+      <img src="${kanapModels[modelIndex].imageUrl}" alt="${kanapModels[modelIndex].altTxt}">
     </div>
     <div class="cart__item__content">
       <div class="cart__item__content__description">
@@ -231,46 +197,72 @@ function displayItemPanel(cartArray, kanapModels) {
     return cartItemsContent
 }
 
+// ================================================================================
 
-// ******************** formulaire **********************
+// Contrôle la résolution des requètes vers l'API et met à jour la page avec articles et total
+
+Promise.all(fetchIdListGenerator(cartIds))
+    .then(() => {
+        document
+            .getElementById("cart__items")
+            .innerHTML = displayItemPanel(cartArray, kanapModels)
+        // document
+        //     .querySelectorAll("article")
+        //     .forEach(
+        //         (article) => {
+        //             const price = document.querySelector("article input")
+        //         }
+        //     )
+        updateTotal(cartArray, kanapModels)
+        eventDelete()
+        eventQuantityChange()
+    }
+    )
+    .catch((error) => alert("Le chargement des articles du panier à échoué, essayez plus tard"))
+
+
+// ******************** Gestion du formulaire **********************
+
+
+// ------- variables -------------------------------------------------------------
+const firstName = document.getElementById("firstName")
+const firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
+const lastName = document.getElementById("lastName")
+const lastNameErrorMsg = document.getElementById("lastNameErrorMsg")
+const address = document.getElementById("address")
+const addressErrorMsg = document.getElementById("addressErrorMsg")
+const city = document.getElementById("city")
+const cityErrorMsg = document.getElementById("cityErrorMsg")
+const email = document.getElementById("email")
 // ------- regexName Regex utilisé pour les input de type texte sauf 'Adresse' ----
 const regexName = /[!@#$%^&*(),;.?\/\\"§:{}|<>0-9]/
 // ------- regexName Regex utilisé pour le champ'Adresse' ----
 const regexAddress = /[!@$%^*;\/\\"§{}|<>]/
-firstName = document.getElementById("firstName")
-firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
-lastName = document.getElementById("lastName")
-lastNameErrorMsg = document.getElementById("lastNameErrorMsg")
-address = document.getElementById("address")
-addressErrorMsg = document.getElementById("addressErrorMsg")
-city = document.getElementById("city")
-cityErrorMsg = document.getElementById("cityErrorMsg")
-email = document.getElementById("email")
 
 
 // ------------- listeners 'input' sur les champ de saisie texte -----------------------
 firstName.addEventListener("input", () => {
-    firstNameErrorMsg.innerText = regexName.test(firstName.value) ? displayErrorMsg("Le prénom") : ""
+    firstNameErrorMsg.textContent = regexName.test(firstName.value) ? displayErrorMsg("Le prénom") : ""
 })
 lastName.addEventListener("input", () => {
-    lastNameErrorMsg.innerText = regexName.test(lastName.value) ? displayErrorMsg("Le nom") : ""
+    lastNameErrorMsg.textContent = regexName.test(lastName.value) ? displayErrorMsg("Le nom") : ""
 })
 address.addEventListener("input", () => {
-    addressErrorMsg.innerText = regexAddress.test(address.value) ? displayErrorMsg("L'adresse", false) : ""
+    addressErrorMsg.textContent = regexAddress.test(address.value) ? displayErrorMsg("L'adresse", false) : ""
 })
 city.addEventListener("input", () => {
-    cityErrorMsg.innerText = regexName.test(city.value) ? displayErrorMsg("La ville") : ""
+    cityErrorMsg.textContent = regexName.test(city.value) ? displayErrorMsg("La ville") : ""
 })
 
 
 /**
- * 
+ * Retourne un message en fonction du libellé du champ
  * @param {string} input nom du champ (le nom, l'adresse ...)
- * @param {boolean=true} noNumber true si ce champ n'accepte pas de titre
- * @returns 
+ * @param {boolean=true} noNumber true si ce champ n'accepte pas de chiffre
+ * @returns {string} Message d'erreur
  */
 function displayErrorMsg(input, noNumber = true) {
-    const stringChiffre = noNumber ? "chiffres ou " : ""
+    const stringChiffre = noNumber ? "de chiffres ou " : ""
     return `${input} ne doit pas contenir ${stringChiffre}de caractères spéciaux`
 }
 
@@ -279,32 +271,30 @@ function displayErrorMsg(input, noNumber = true) {
 
 
 /**
- * Contrôle l'absence de message d'erreurs dans le formulaire
- * @returns {boolean} renvoi 'true' si aucun d'un message d'erreur
+ * Contrôle l'absence de message d'erreurs dans le formulaire et que le panier n'est pas vide
+ * @returns {boolean} renvoi 'true' si aucun d'un message d'erreur et panier non vide
  */
 function formControl() {
     let control = false
-    const noMsgError = !(firstNameErrorMsg.innerHTML || lastNameErrorMsg.innerText || addressErrorMsg.innerText || cityErrorMsg.innerText)
+    const noMsgError = !(firstNameErrorMsg.textContent || lastNameErrorMsg.textContent || addressErrorMsg.textContent || cityErrorMsg.textContent)
     if (noMsgError && (cartArray.length > 0)) {
-        console.log(cartArray)
+        // console.log(cartArray)
         control = true
     }
     return control
 }
 
+
+// -------------- Evenement 'Submit' sur le formulaire -----------------------------------
 const form = document.getElementsByTagName("form")[0]
 form.addEventListener("submit", (e) => {
+    e.preventDefault()
     if (formControl()) {
-        e.preventDefault() // a supprimer après test
         sendOrder()
-
     }
     else {
-        e.preventDefault()
-        // alert("Au moins un des champ des formulaire est incorrect")
+        alert("Le panier est vide ou au moins un des champ des formulaire est incorrect")
     }
-
-
 })
 
 
@@ -336,12 +326,13 @@ function sendOrder() {
     }
 
     // ---------- requète POST -----------------------------------------
-    fetch("http://127.0.0.1:3000/api/products/order", options)
+    fetch(`${hrefApi}order`, options)
         .then((response) => response.json())
         .then((value) => {
             // console.log("réponse ok")
             // console.log(value.orderId)
-            window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`
+            window.location.href = `./confirmation.html?orderId=${value.orderId}` 
+            // `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`
         })
         .catch((error) => {
             alert("L'envoi de commande a échoué. Essayez plus tard")

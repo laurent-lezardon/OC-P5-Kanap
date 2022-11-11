@@ -1,20 +1,18 @@
-const localHref = window.location.href
-console.log(localHref)
+// Kanap - script de la page confirmation
 
 /**
  * Extraction de l'identifiant d'un canapé dans l'url de la page
- * @param {string} href url de la page
- * @returns {string} identifiant du cannapé s'il est présent, une chaîne vide sinon
+ * @param {string} href 
+ * @returns {string} identifiant du cannapé s'il est présent dans l'url, une chaîne vide sinon
  */
  function getOrderId(href) {
-    const urlProduct = new URL(href)
-    const search_params = new URLSearchParams(urlProduct.search)
+    const urlOrder = new URL(href)
+    const search_params = new URLSearchParams(urlOrder.search)
     if (search_params.has("orderId")) {
         return search_params.get("orderId")
     } else return ""
 }
 
-
-console.log(getOrderId(localHref))
-document.getElementById("orderId").innerText = getOrderId(localHref)
+const localHref = window.location.href
+document.getElementById("orderId").textContent = getOrderId(localHref)
 localStorage.clear()

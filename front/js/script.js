@@ -1,4 +1,18 @@
-const hrefApi = "http://127.0.0.1:3000/api/products"
+/**
+ * KanapsObjet est un objet "kanapé" retourné par l'API
+ * @typedef {object} KanapsObject
+ * @property {string} _id
+ * @property {string} name
+ * @property {string} imageUrl
+ * @property {string} altTxt
+ * @property {[string]} colors
+ * @property {number} price
+ * @property {string} description
+ */
+
+
+
+const hrefApi = "http://127.0.0.1:3000/api/products/"
 
 function askKanaps() {
     fetch(hrefApi)
@@ -21,34 +35,26 @@ function askKanaps() {
         })
 }
 
-/**
- * @typedef {object} KanapsObject
- * @property {string} _id
- * @property {string} name
- * @property {string} imageUrl
- * @property {string} altTxt
- * @property {string[]} colors
- * @property {number} price
- * @property {string} description
- */
+
+
 
 
 /**
  * Construction du code HTML des cartes de canapés d'après le tableau retourné par l'API
- * @param {KanapsObject[]} kanapsObjects 
+ * @param {[KanapsObject]} kanapsObjects 
  * @returns {string} chaîne de caractères correspondant au code HTML 
  */
 function displayKanaps(kanapsObjects) {
     let kanapsItems = ""
-    kanapsObjects.forEach((kanap) => {
-        console.log(kanap._id)
-        kanapsItems += `<a href="./product.html?id=${kanap._id}">
-    <article>
-      <img src=${kanap.imageUrl} alt=${kanap.altTxt}>
-      <h3 class="productName">${kanap.name}</h3>
-      <p class="productDescription">${kanap.description}</p>
-    </article>
-  </a>`})    
+    kanapsObjects.forEach((kanap) => {       
+        kanapsItems += `
+        <a href="./product.html?id=${kanap._id}">
+            <article>
+                <img src="${kanap.imageUrl}" alt="${kanap.altTxt}">      
+                <h3 class="productName">${kanap.name}</h3>
+                <p class="productDescription">${kanap.description}</p>
+            </article>
+        </a>`})    
     return kanapsItems
 }
 

@@ -14,6 +14,9 @@
 
 const hrefApi = "http://127.0.0.1:3000/api/products/"
 
+/**
+ * Récupère les articles de l'API et les affiches
+ */
 function askKanaps() {
     fetch(hrefApi)
         .then((response) => response.json())

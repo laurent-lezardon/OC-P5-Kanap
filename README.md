@@ -1,15 +1,22 @@
-# Kanap #
+![logo du site](./front/images/logo.png)
 
-This is the front end and back end server for Project 5 of the Web Developer path.
+ 
+# Présentation du projet 5
 
-### Back end Prerequisites ###
+Construction d'un site de e-commerce en javascript. Les 4 pages du projet sont livrées, le contenu dynamique est à réaliser en Javascript pur. Les articles sont disponibles au travers d'une API.
+- Le panier doit être stocké dans le localStorage
+- les paramètres sont délivrés dans les URL
+- le code doit être docummenté avec JSdoc
+ 
 
-You will need to have Node and `npm` installed locally on your machine.
 
-### Back end Installation ###
+# Compétences évaluées 
 
-Clone this repo. From the "back" folder of the project, run `npm install`. You 
-can then run the server with `node server`. 
-The server should run on `localhost` with default port `3000`. If the
-server runs on another port for any reason, this is printed to the
-console when the server starts, e.g. `Listening on port 3001`.
+- Utilisation d'une API (GET, POST)
+- modification du DOM avec JavaScript (ajout, suppression et modification d'éléments)
+- utilisation de l'URLSearchParams
+- l'utilisation de localStorage
+- gestion des évènements
+- documentation du code avec JSdoc
+
+

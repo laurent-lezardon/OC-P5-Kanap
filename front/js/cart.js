@@ -48,7 +48,7 @@ function fetchIdListGenerator(cartIds) {
                 })
                 .catch((error) => {
                     console.error("Erreur : ", error)
-                    alert("Echec de chargement des articles")
+                    
                 }))
     }
     return fetchList
@@ -202,7 +202,7 @@ Promise.all(fetchIdListGenerator(cartIds))
         eventQuantityChange()
     }
     )
-    .catch((error) => alert("Le chargement des articles du panier à échoué, essayez plus tard"))
+    .catch((error) => alert("Echec de connexion avec le serveur. Essayez plus tard"))
 
 
 // ******************** Gestion du formulaire **********************
@@ -316,7 +316,7 @@ function sendOrder() {
             window.location.href = `./confirmation.html?orderId=${value.orderId}`             
         })
         .catch((error) => {
-            alert("L'envoi de commande a échoué. Essayez plus tard")
+            alert("Echec de connexion avec le serveur. Essayez plus tard")
             // console.log("catch :", error)
         })
 

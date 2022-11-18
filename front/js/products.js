@@ -77,7 +77,7 @@ function askKanap() {
                 }
             })
         .catch((error) => {
-            alert("Le transfert des données de l'article à échoué, essayez plus tard !")
+            alert("Echec de connexion avec le serveur. Essayez plus tard")
             console.log(error)
         })
 }

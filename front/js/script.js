@@ -13,6 +13,7 @@
 
 
 const hrefApi = "http://127.0.0.1:3000/api/products/"
+// export {hrefApi}
 
 /**
  * Récupère les articles de l'API et les affiches
@@ -28,7 +29,7 @@ function askKanaps() {
         })
         .catch((error) => {
             console.error("Erreur :", error)
-            alert("Erreur de chargement de la page, essayez plus tard")
+            alert("Echec de connexion avec le serveur. Essayez plus tard")
         })
 }
 

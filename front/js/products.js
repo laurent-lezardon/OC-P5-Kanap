@@ -146,12 +146,12 @@ cartButton.addEventListener("click", () => {
         quantity: parseInt(kanapQuantity.value)
     }
     // l'ajout au panier est valide (couleur définie et quantité != 0)
-    if (kanapColors.value && (kanapQuantity.value != 0)) {        
+    if (kanapColors.value && (kanapQuantity.value != 0) && (kanapQuantity.value <= 100)) {        
         addToLocalStorage(addToCartObject)
         alert("Article ajouté au panier")
     }
     // l'ajout au panier n'est pas valide (couleur non renseignée)
-    else if (!kanapColors.value) {
+    else if (!kanapColors.value ) {
         kanapColors.style.color = "#fc5858"
     // l'ajout au panier n'est pas valide (quantité = 0)
     } else { kanapQuantity.style.color = "#fc5858" }

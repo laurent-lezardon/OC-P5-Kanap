@@ -39,16 +39,16 @@ const cartIds = new Set(cartArray.map((item) => item.id))
  */
 function fetchIdListGenerator(cartIds) {
     const fetchList = []
-    for (let id of cartIds) {        
+    for (let id of cartIds) {
         fetchList.push(
             fetch(`${hrefApi}${id}`)
-                .then((response) =>  response.json())
+                .then((response) => response.json())
                 .then((KanapsObject) => {
-                    kanapModels.push(KanapsObject)                    
+                    kanapModels.push(KanapsObject)
                 })
                 .catch((error) => {
                     console.error("Erreur : ", error)
-                    
+
                 }))
     }
     return fetchList
@@ -62,12 +62,13 @@ function fetchIdListGenerator(cartIds) {
 function eventDelete() {
     document
         .querySelectorAll(".deleteItem").forEach((deletItem) => {
-            deletItem.addEventListener("click", () => {                
+            deletItem.addEventListener("click", () => {
                 const itemIndexCart = getItemIndexCart(deletItem, cartArray)
                 cartArray.splice(itemIndexCart, 1)
                 deletItem.closest("article").remove()
-                localStorage.cartJson = JSON.stringify(cartArray)                
+                localStorage.cartJson = JSON.stringify(cartArray)
                 updateTotal(cartArray, kanapModels)
+                emptyCart()
             })
         })
 }
@@ -80,12 +81,17 @@ function eventQuantityChange() {
     document
         .querySelectorAll(".itemQuantity")
         .forEach((itemQuantity) => {
-            itemQuantity.addEventListener("change", () => {                
-                // console.log(getItemIndexCart(itemQuantity, cartArray))
-                const itemIndexCart = getItemIndexCart(itemQuantity, cartArray)
-                cartArray[itemIndexCart].quantity = itemQuantity.value
-                localStorage.cartJson = JSON.stringify(cartArray)                
-                updateTotal(cartArray, kanapModels)
+            itemQuantity.addEventListener("change", () => {
+                if ((itemQuantity.value > 0) && (itemQuantity.value <= 100)) {
+                    itemQuantity.style.color = "var(--footer-secondary-color)"
+                    const itemIndexCart = getItemIndexCart(itemQuantity, cartArray)
+                    cartArray[itemIndexCart].quantity = itemQuantity.value
+                    localStorage.cartJson = JSON.stringify(cartArray)
+                    updateTotal(cartArray, kanapModels)
+                } else {
+                    alert("Le nombre d'article doit être compris entre 1 et 100")
+                    itemQuantity.style.color = "#fc5858"
+                }
             })
         })
 }
@@ -95,7 +101,7 @@ function eventQuantityChange() {
  * @param {[Kanap]} cartArray articles du panier
  * @param {[KanapsObject]} kanapModels paramètres des articles récupérés sur l'API
  */
-function updateTotal(cartArray, kanapModels) {    
+function updateTotal(cartArray, kanapModels) {
     document.getElementById("totalQuantity").textContent = getCartTotal(cartArray)
     document.getElementById("totalPrice").textContent = getTotalPrice(cartArray, kanapModels)
 }
@@ -107,7 +113,7 @@ function updateTotal(cartArray, kanapModels) {
  * @returns {number} index ou -1 si non trouvé
  */
 function getItemIndexCart(Element, cart) {
-    const item = Element.closest("article").dataset    
+    const item = Element.closest("article").dataset
     const index = cart.findIndex((k) => (k.id == item.id) && (k.color == item.color))
     return index
 }
@@ -185,16 +191,25 @@ function displayItemPanel(cartArray, kanapModels) {
     return cartItemsContent
 }
 
+// Dissimulation du formulaire pour un panier vide
+function emptyCart() {
+    if (cartArray.length === 0) {
+        const divform = document.getElementsByClassName("cart__order")[0]
+        divform.style.visibility = "hidden"
+    }
+}
+
 // ================================================================================
+// Si le panier est vide, le formulaire n'est pas affiché
+emptyCart()
 
 // Contrôle la résolution des requètes vers l'API et met à jour la page avec articles et total
-
 Promise.all(fetchIdListGenerator(cartIds))
     .then(() => {
         // Affichage de la page avec les articles
         document
             .getElementById("cart__items")
-            .innerHTML = displayItemPanel(cartArray, kanapModels)  
+            .innerHTML = displayItemPanel(cartArray, kanapModels)
         // Mise à jour du total      
         updateTotal(cartArray, kanapModels)
         // gestion des évènements sur les articles
@@ -209,6 +224,7 @@ Promise.all(fetchIdListGenerator(cartIds))
 
 
 // ------- variables -------------------------------------------------------------
+
 const firstName = document.getElementById("firstName")
 const firstNameErrorMsg = document.getElementById("firstNameErrorMsg")
 const lastName = document.getElementById("lastName")
@@ -260,9 +276,10 @@ function displayErrorMsg(input, noNumber = true) {
  */
 function formControl() {
     let control = false
+
     const noMsgError = !(firstNameErrorMsg.textContent || lastNameErrorMsg.textContent || addressErrorMsg.textContent || cityErrorMsg.textContent)
-    if (noMsgError && (cartArray.length > 0)) {
-        // console.log(cartArray)
+    if (noMsgError) {
+        
         control = true
     }
     return control
@@ -276,9 +293,9 @@ form.addEventListener("submit", (e) => {
     if (formControl()) {
         sendOrder()
     }
-    else {
-        alert("Le panier est vide ou au moins un des champ des formulaire est incorrect")
-    }
+    // else {
+    //     alert("Le panier est vide ou au moins un des champ des formulaire est incorrect")
+    // }
 })
 
 
@@ -312,8 +329,8 @@ function sendOrder() {
     // ---------- requète POST -----------------------------------------
     fetch(`${hrefApi}order`, options)
         .then((response) => response.json())
-        .then((value) => {            
-            window.location.href = `./confirmation.html?orderId=${value.orderId}`             
+        .then((value) => {
+            window.location.href = `./confirmation.html?orderId=${value.orderId}`
         })
         .catch((error) => {
             alert("Echec de connexion avec le serveur. Essayez plus tard")

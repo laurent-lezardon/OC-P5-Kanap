@@ -129,7 +129,20 @@ function indexKanapInCart(cartArray, kanap) {
     return index
 }
 
-
+/**
+ * Teste si une valeur est un entier compris entre min et max
+ * @param {*} value 
+ * @param {Number} min 
+ * @param {Number} max 
+ * @returns {Boolean}
+ */
+function isIntegerMinMax(value, min=0,max=0) {
+    // astuce permettant de controler que value est un entier
+    value = parseFloat(value)
+    const isInteger = ((value == +value) && (value % 1 === 0))    
+    const isInInterval = ((value >= min) && (value <= max))    
+    return isInteger && isInInterval
+}
 
 
 // ================================================================================ 
@@ -146,7 +159,9 @@ cartButton.addEventListener("click", () => {
         quantity: parseInt(kanapQuantity.value)
     }
     // l'ajout au panier est valide (couleur définie et quantité != 0)
-    if (kanapColors.value && (kanapQuantity.value != 0) && (kanapQuantity.value <= 100)) {        
+    console.log(kanapQuantity.value)
+    // console.log(isIntegerMinMax(kanapQuantity.value,1,100))
+    if (kanapColors.value && isIntegerMinMax(kanapQuantity.value,1,100)) {        
         addToLocalStorage(addToCartObject)
         alert("Article ajouté au panier")
     }

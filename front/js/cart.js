@@ -82,7 +82,7 @@ function eventQuantityChange() {
         .querySelectorAll(".itemQuantity")
         .forEach((itemQuantity) => {
             itemQuantity.addEventListener("change", () => {
-                if ((itemQuantity.value > 0) && (itemQuantity.value <= 100)) {
+                if (isIntegerMinMax(itemQuantity.value,1,100)) {
                     itemQuantity.style.color = "var(--footer-secondary-color)"
                     const itemIndexCart = getItemIndexCart(itemQuantity, cartArray)
                     cartArray[itemIndexCart].quantity = itemQuantity.value
@@ -197,6 +197,20 @@ function emptyCart() {
         const divform = document.getElementsByClassName("cart__order")[0]
         divform.style.visibility = "hidden"
     }
+}
+
+/**
+ * Teste si une valeur est un entier compris entre min et max
+ * @param {*} value 
+ * @param {Number} min 
+ * @param {Number} max 
+ * @returns {Boolean}
+ */
+ function isIntegerMinMax(value, min=0,max=0) {
+    // astuce permettant de controler que value est un entier
+    const isInteger = ((value == +value) && (value % 1 === 0))    
+    const isInInterval = ((value >= min) && (value <= max))    
+    return isInteger && isInInterval
 }
 
 // ================================================================================
